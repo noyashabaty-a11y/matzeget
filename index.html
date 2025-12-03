@@ -19,12 +19,7 @@
 
         body {
             background-color: #050510; /* Deep Space Black */
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            background-position: 0 0, 40px 60px, 130px 270px;
+            /* Starry background moved to a pseudo-element or separate div to allow darkening */
             color: #e2e8f0;
             font-family: 'Heebo', sans-serif;
             height: 100vh;
@@ -32,19 +27,97 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            position: relative;
+            transition: background-color 0.5s;
         }
 
-        /* Slide Container */
+        /* --- INTERACTIVE BACKGROUND ECLIPSE --- */
+        #cosmos-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind slide deck */
+            pointer-events: none; /* Mouse passes through to slide deck if needed, but we track mouse on window */
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            transition: opacity 0.5s;
+        }
+
+        /* The Sun Container in Background */
+        .bg-sun-container {
+            position: absolute;
+            top: 20%; /* Positioned visibly above the slide deck area or behind it */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: blur(0px);
+        }
+
+        .bg-sun {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, #fff 30%, #fbbf24 70%, #f59e0b 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px 20px rgba(251, 191, 36, 0.6), 0 0 100px 40px rgba(245, 158, 11, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .bg-moon {
+            width: 178px; /* Slightly smaller for annular effect or similar for total */
+            height: 178px;
+            background-color: #050510; /* Match deep space color */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-250%, -50%); /* Start position: Left */
+            z-index: 2;
+            box-shadow: inset -10px -5px 20px rgba(255,255,255,0.05);
+            /* Moving controlled by JS */
+        }
+
+        /* Corona Effect (Hidden by default) */
+        .bg-corona {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 0 50px 10px rgba(255, 255, 255, 0.8), 
+                        0 0 100px 30px rgba(100, 200, 255, 0.5),
+                        0 0 180px 60px rgba(100, 200, 255, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 3s ease;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- SLIDE DECK (Adjusted z-index) --- */
         .slide-deck {
             position: relative;
             width: 1280px;
             height: 720px;
-            background: rgba(20, 20, 40, 0.75);
+            background: rgba(20, 20, 40, 0.85); /* Slightly more opaque to read text over sun */
             backdrop-filter: blur(15px);
             border-radius: 20px;
             box-shadow: 0 0 60px rgba(0, 100, 255, 0.15);
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10; /* Above background */
         }
 
         .slide {
@@ -54,12 +127,24 @@
             padding: 40px 60px;
             flex-direction: column;
             animation: fadeIn 0.6s ease;
-            overflow: hidden; /* Prevent scrolling globally inside slides unless specified */
+            overflow: hidden; 
             position: relative; 
         }
 
         .slide.active {
             display: flex;
+        }
+
+        /* Scrollbar styling */
+        .slide::-webkit-scrollbar, .text-box::-webkit-scrollbar, .facts-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .slide::-webkit-scrollbar-track, .text-box::-webkit-scrollbar-track, .facts-container::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+        .slide::-webkit-scrollbar-thumb, .text-box::-webkit-scrollbar-thumb, .facts-container::-webkit-scrollbar-thumb {
+            background: #60a5fa;
+            border-radius: 4px;
         }
 
         @keyframes fadeIn {
@@ -83,7 +168,7 @@
         ul, ol { padding-right: 20px; }
         ul li::marker { color: #fbbf24; }
 
-        /* Compact Text Helper Classes for Specific Slides */
+        /* Compact Text Helper Classes */
         .text-compact p, .text-compact li {
             font-size: 18px;
             margin-bottom: 8px;
@@ -95,7 +180,6 @@
             margin-bottom: 10px;
         }
 
-        /* Extra Compact for crowded slides */
         .text-x-compact p, .text-x-compact li {
             font-size: 16px;
             margin-bottom: 6px;
@@ -139,7 +223,7 @@
         /* Image Placeholder Style */
         .img-placeholder {
             width: 100%;
-            height: 200px; /* Default height */
+            height: 200px;
             background: #1e293b;
             border: 2px dashed #475569;
             border-radius: 10px;
@@ -168,12 +252,11 @@
             object-fit: cover;
         }
 
-        /* Square Image specific for Slide 5 */
         .img-square {
             aspect-ratio: 1 / 1;
-            height: auto; /* Height determined by width */
+            height: auto;
             width: 100%;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0;
         }
 
         /* Grid for Facts */
@@ -215,7 +298,6 @@
             line-height: 1.2;
         }
 
-        /* Icons in Facts */
         .fact-icon {
             width: 45px;
             height: 45px;
@@ -403,7 +485,6 @@
             justify-content: center;
             align-items: center;
             height: 100%;
-            /* Ensure it doesn't overlap with buttons */
             padding-bottom: 60px; 
         }
 
@@ -507,10 +588,14 @@
 </head>
 <body>
 
-<!-- EMBEDDED SOUNDS (BASE64) TO FIX "NO SOUND" ISSUE -->
-<audio id="soundCorrect" src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio> <!-- Placeholder updated below in JS with generated beep -->
-<audio id="soundWrong" src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
-<audio id="soundWin" src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
+<!-- BACKGROUND ECLIPSE LAYER -->
+<div id="cosmos-bg">
+    <div class="bg-sun-container">
+        <div class="bg-sun"></div>
+        <div class="bg-corona"></div>
+        <div class="bg-moon" id="bgMoon"></div>
+    </div>
+</div>
 
 <div class="slide-deck">
 
@@ -522,6 +607,7 @@
             <h2 style="border: none; font-size: 30px; color: #93c5fd;">מצגת לימודית</h2>
             <div style="margin-top: 40px; font-size: 24px;">
                 <p>שלב אחר שלב</p>
+                <p style="font-size: 16px; opacity: 0.7;">הזיזו את העכבר כדי לשלוט בליקוי ברקע!</p>
             </div>
         </div>
     </div>
@@ -902,9 +988,6 @@
 
 <script>
     // --- AUDIO SETUP (Embedded Base64 for Reliability) ---
-    // Short generic beep for correct
-    const audioCorrect = new Audio("data:audio/wav;base64,UklGRl9vT1dQVRE......"); // Using placeholder to keep logic clear, real logic below
-    
     // Generating simple beeps programmatically to ensure they work without external files
     const context = new (window.AudioContext || window.webkitAudioContext)();
     
@@ -1003,6 +1086,41 @@
     document.getElementById('lightbox').addEventListener('click', function(e) {
         if (e.target === this) {
             closeLightbox();
+        }
+    });
+
+    // --- BACKGROUND ECLIPSE LOGIC ---
+    document.addEventListener('mousemove', (e) => {
+        const width = window.innerWidth;
+        const x = e.clientX;
+        // Normalize x from -1 to 1 based on center (offset)
+        // Range: Moon starts left of sun, ends right of sun.
+        // Let's allow movement of +/- 200px from center.
+        const offset = (x - width / 2) / (width / 2) * 250; 
+        
+        const moon = document.getElementById('bgMoon');
+        const sunContainer = document.querySelector('.bg-sun'); // To check visual overlap logic if needed
+        const corona = document.querySelector('.bg-corona');
+        
+        // Apply transform to moon relative to center (-50%, -50% is center)
+        // We add translateX
+        moon.style.transform = `translate(calc(-50% + ${offset}px), -50%)`;
+        
+        // Calculate Eclipse State
+        // If offset is close to 0, it's total eclipse.
+        const overlap = Math.abs(offset);
+        
+        if (overlap < 5) {
+            // Total Eclipse
+            corona.style.opacity = 1;
+            document.body.style.backgroundColor = "#000000"; // Darken sky
+        } else if (overlap < 60) {
+            // Partial
+            corona.style.opacity = (60 - overlap) / 200; // Faint glow
+            document.body.style.backgroundColor = "#050510"; // Normal sky
+        } else {
+            corona.style.opacity = 0;
+            document.body.style.backgroundColor = "#050510";
         }
     });
 
