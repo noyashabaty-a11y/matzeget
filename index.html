@@ -492,18 +492,18 @@
         .answer-btn.wrong {
             background: #ef4444 !important;
             border-color: #f87171 !important;
-        /* Choice Screen Styles */
+            animation: shake 0.5s;
+        }
+
+        /* Choice Screen */
         .choice-card-container {
             display: flex;
             gap: 50px;
             justify-content: center;
             align-items: center;
-            /* שינוי: במקום גובה קבוע, נאפשר גובה מינימלי וגדילה */
-            min-height: 50vh; 
-            height: auto;
-            padding-bottom: 60px; 
+            height: 100%;
+            padding-bottom: 60px;
             flex-wrap: wrap; /* Wrap on mobile */
-            width: 100%;
         }
 
         .choice-card {
@@ -704,16 +704,11 @@
             /* Choice Cards Mobile */
             .choice-card-container {
                 flex-direction: column;
-                gap: 30px; /* ריווח גדול יותר בין הכפתורים */
-                height: auto; /* תיקון קריטי: מאפשר לקונטיינר לגדול */
-                padding-bottom: 120px; /* מרווח גלילה תחתון נדיב */
-                justify-content: flex-start;
+                gap: 20px;
             }
             .choice-card {
                 width: 100%;
                 padding: 20px;
-                /* וידוא שהכרטיסים לא נדחקים החוצה */
-                flex-shrink: 0; 
             }
             .choice-icon { font-size: 50px; margin-bottom: 10px; }
         }
