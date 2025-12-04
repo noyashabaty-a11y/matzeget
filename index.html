@@ -703,13 +703,22 @@
             
             /* Choice Cards Mobile */
             .choice-card-container {
-                flex-direction: column;
+                display: flex;
+                flex-direction: column;     /* כפתורים אחד מתחת לשני */
+                justify-content: flex-start;
+                align-items: stretch;       /* שלא ייחתכו במרכז */
                 gap: 20px;
+                height: auto;               /* לא 100% בגובה */
+                padding-bottom: 20px;       /* קצת ריווח מלמטה */
             }
+            
             .choice-card {
-                width: 100%;
+                width: 100%;                /* כל כפתור רוחב מלא */
+                max-width: 100%;
                 padding: 20px;
+                margin: 0;
             }
+
             .choice-icon { font-size: 50px; margin-bottom: 10px; }
         }
 
